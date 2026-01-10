@@ -1,3 +1,4 @@
+# Trigger build
 env:
   CIRRUS_CLONE_DEPTH: 1
   GITHUB_TOKEN: ENCRYPTED[...your_encrypted_token_here...]
