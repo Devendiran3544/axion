@@ -1,0 +1,31 @@
+env:
+  CIRRUS_CLONE_DEPTH: 1
+  GITHUB_TOKEN: ENCRYPTED[...your_encrypted_token_here...]
+
+task:
+  name: "Build VoltageOS for Miatoll"
+  timeout_in: 120m
+  container:
+    image: aospbuild/aosp:latest
+    cpu: 8
+    memory: 32G
+    kvm: true
+
+  sync_script:
+    - mkdir -p ~/bin
+    - curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+    - chmod a+x ~/bin/repo
+    - export PATH=~/bin:$PATH
+    - repo init -u https://github.com/VoltageOS/manifest.git -b 14 --depth=1
+    - mkdir -p .repo/local_manifests
+    - cp manifests/miatoll.xml .repo/local_manifests/
+    - repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+
+  build_script:
+    - export PATH=~/bin:$PATH
+    - . build/envsetup.sh
+    - lunch voltage_miatoll-userdebug
+    - mka bacon -j$(nproc --all)
+
+  upload_artifacts:
+    path: "out/target/product/miatoll/VoltageOS-*.zip"
