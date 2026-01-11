@@ -8,16 +8,27 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
+    - name: Maximize Build Space
+      uses: easimon/maximize-build-space@master
+      with:
+        root-reserve-mb: 2048
+        temp-reserve-mb: 2048
+        remove-dotnet: 'true'
+        remove-android: 'true'
+        remove-haskell: 'true'
+        remove-codeql: 'true'
+        remove-docker-images: 'true'
+
     - name: Free Disk Space
       uses: jlumbroso/free-disk-space@main
       with:
-        tool-cache: true
-        android: true
-        dotnet: true
-        haskell: true
+        tool-cache: false
+        android: false
+        dotnet: false
+        haskell: false
         large-packages: true
-        docker-images: true
-        swap-storage: true
+        docker-images: false
+        swap-storage: false
 
     - name: Checkout
       uses: actions/checkout@v4
@@ -42,7 +53,7 @@ jobs:
         mkdir axion
         cd axion
         repo init -u https://github.com/AxionAOSP/android.git -b sixteen --depth=1
-        repo sync -c --force-sync --no-clone-bundle --no-tags -j$(nproc)
+        repo sync -c --force-sync --no-clone-bundle --no-tags -j$(nproc --all) --optimized-fetch --prune
 
     - name: Clone device / vendor / kernel trees
       run: |
