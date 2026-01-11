@@ -8,6 +8,17 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
+    - name: Free Disk Space
+      uses: jlumbroso/free-disk-space@main
+      with:
+        tool-cache: true
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: true
+        docker-images: true
+        swap-storage: true
+
     - name: Checkout
       uses: actions/checkout@v4
 
@@ -30,7 +41,7 @@ jobs:
       run: |
         mkdir axion
         cd axion
-        repo init -u https://github.com/AxionAOSP/android.git -b sixteen
+        repo init -u https://github.com/AxionAOSP/android.git -b sixteen --depth=1
         repo sync -c --force-sync --no-clone-bundle --no-tags -j$(nproc)
 
     - name: Clone device / vendor / kernel trees
